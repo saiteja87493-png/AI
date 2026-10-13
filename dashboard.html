@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#091426">
+  <title>BrandShield AI — Digital Risk Protection</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #091426;
+      --sidebar: #081221;
+      --panel: #111e32;
+      --panel-raised: #14243b;
+      --border: #263750;
+      --text: #f2f5fc;
+      --muted: #91a2bd;
+      --blue: #56d3f5;
+      --violet: #a78bfa;
+      --green: #42d6a2;
+      --orange: #ffb866;
+      --red: #ff7485;
+      --radius: 16px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(ellipse at 77% 0%, #152644 0, transparent 36%), var(--bg); }
+    button, input, select, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .app { min-height: 100vh; }
+    .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 5; width: 248px; padding: 25px 16px 18px; display: flex; flex-direction: column; background: rgba(8,18,33,.97); border-right: 1px solid #1c2a40; }
+    .brand-lockup { display:flex; gap:11px; align-items:center; padding:0 9px 29px; }
+    .shield { width:39px; height:44px; display:grid; place-items:center; color:#071629; font-size:20px; font-weight:900; background:linear-gradient(145deg,#62e0ff,#5c79ff); clip-path:polygon(50% 0,94% 15%,90% 65%,50% 100%,10% 65%,6% 15%); }
+    .brand-name { font-size:17px; font-weight:760; letter-spacing:-.4px; }
+    .brand-sub { margin-top:3px; color:var(--blue); font-size:10px; font-weight:750; letter-spacing:1.6px; }
+    .nav-caption { padding:8px 11px 10px; color:#7486a2; font-size:10px; font-weight:750; letter-spacing:1.2px; }
+    .nav { display:grid; gap:5px; }
+    .nav button { width:100%; display:flex; align-items:center; gap:12px; padding:11px 12px; border:0; border-radius:10px; background:transparent; color:#a5b2c7; font-size:13px; text-align:left; cursor:pointer; transition:background .15s,color .15s; }
+    .nav button:hover { background:#12223a; color:white; }
+    .nav button.active { background:#193354; color:#f6fbff; box-shadow:inset 3px 0 #59d8ff; }
+    .nav-icon { width:19px; text-align:center; font-size:16px; }
+    .sidebar-bottom { margin-top:auto; }
+    .demo-card { margin:10px 5px 19px; padding:12px; border:1px solid #28405e; border-radius:12px; background:#102139; }
+    .demo-heading { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; }
+    .live-dot { width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 10px #42d6a280; }
+    .demo-note { margin:6px 0 0 16px; color:var(--muted); font-size:10px; line-height:1.45; }
+    .team { display:flex; align-items:center; gap:10px; padding:14px 9px 2px; border-top:1px solid #1e2c42; }
+    .avatar { width:33px; height:33px; display:grid; place-items:center; border-radius:50%; background:#29436f; color:#d5e6ff; font-size:11px; font-weight:800; }
+    .team-name { font-size:11px; font-weight:700; }
+    .team-role { margin-top:3px; color:var(--muted); font-size:10px; }
+    .main { margin-left:248px; padding:35px clamp(20px,3vw,48px) 22px; max-width:1800px; }
+    .topline { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:9px; color:#9cacbf; font-size:11px; letter-spacing:.35px; }
+    .top-actions { display:flex; gap:9px; }
+    .title-row { display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:22px; }
+    h1 { margin:0; font-size:clamp(25px,3vw,34px); line-height:1.2; letter-spacing:-1px; }
+    .subtitle { margin:8px 0 0; color:var(--muted); font-size:13px; line-height:1.5; }
+    .button { display:inline-flex; justify-content:center; align-items:center; gap:7px; min-height:37px; padding:0 14px; border:1px solid var(--border); border-radius:10px; background:#14243b; color:#e9f2ff; font-size:12px; font-weight:650; cursor:pointer; transition:filter .15s,transform .15s; }
+    .button:hover { filter:brightness(1.15); }
+    .button:active { transform:translateY(1px); }
+    .button.primary { border-color:transparent; background:linear-gradient(110deg,#59d8f3,#637bff); color:#071629; }
+    .button.quiet { background:transparent; }
+    .button.small { min-height:29px; padding:0 10px; font-size:11px; }
+    .button:disabled { opacity:.45; cursor:not-allowed; }
+    .cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:13px; margin-bottom:16px; }
+    .card, .panel { border:1px solid var(--border); border-radius:var(--radius); background:linear-gradient(145deg,rgba(19,34,55,.97),rgba(15,29,48,.97)); box-shadow:0 8px 28px #02091618; }
+    .metric { min-height:118px; padding:17px 18px 15px; }
+    .metric-top { display:flex; align-items:center; gap:9px; color:#aab9cc; font-size:10px; font-weight:700; letter-spacing:.6px; }
+    .metric-icon { width:29px; height:29px; display:grid; place-items:center; border-radius:9px; background:#173854; color:var(--blue); font-size:14px; }
+    .metric-icon.red { background:#482731; color:#ff8797; }
+    .metric-icon.purple { background:#342b50; color:#c5aaff; }
+    .metric-icon.green { background:#173c39; color:#4ce0ae; }
+    .metric-bottom { display:flex; align-items:baseline; gap:11px; margin:10px 0 0 37px; }
+    .metric-value { font-size:29px; line-height:1; font-weight:760; letter-spacing:-.7px; }
+    .metric-detail { color:#54d8ae; font-size:10px; }
+    .layout { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr); gap:15px; margin-bottom:15px; }
+    .panel { padding:19px; }
+    .panel-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    .panel-title { margin:0; font-size:15px; font-weight:720; letter-spacing:-.2px; }
+    .panel-subtitle { margin:5px 0 0; color:var(--muted); font-size:11px; }
+    .chart-wrap { height:196px; margin-top:12px; }
+    .chart { width:100%; height:100%; overflow:visible; }
+    .chart text { fill:#8295b1; font:10px Inter,system-ui,sans-serif; }
+    .chart-grid { stroke:#283951; stroke-width:1; }
+    .chart-social { fill:none; stroke:#57d7f5; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+    .chart-apps { fill:none; stroke:#ad8aff; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+    .legend { display:flex; gap:14px; align-items:center; color:#9bacc4; font-size:10px; }
+    .legend span { display:flex; align-items:center; gap:6px; white-space:nowrap; }
+    .legend i { width:7px; height:7px; border-radius:50%; background:var(--blue); }
+    .legend .violet { background:var(--violet); }
+    .profile-top { display:flex; align-items:center; gap:13px; margin:21px 0 14px; }
+    .profile-logo { width:48px; height:48px; display:grid; place-items:center; flex:none; overflow:hidden; border-radius:15px; background:linear-gradient(145deg,#203e70,#18335b); color:#72dfff; font-size:22px; font-weight:800; }
+    .profile-logo img { width:100%; height:100%; object-fit:cover; }
+    .profile-name { font-size:17px; font-weight:740; }
+    .profile-website { margin-top:4px; color:var(--muted); font-size:11px; }
+    .protected { margin-left:auto; padding:7px 9px; border-radius:20px; background:#143d39; color:#70e4b8; font-size:10px; font-weight:700; white-space:nowrap; }
+    .official-label { padding-top:12px; border-top:1px solid var(--border); color:#8fa1ba; font-size:9px; font-weight:750; letter-spacing:.9px; }
+    .official-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px; }
+    .official-item { min-width:0; padding:9px; border:1px solid #293c56; border-radius:10px; background:#0d192a; }
+    .official-item strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:10px; }
+    .official-item span { display:block; margin-top:5px; overflow:hidden; color:var(--muted); font-size:9px; text-overflow:ellipsis; white-space:nowrap; }
+    .table-panel { padding:18px 19px 8px; }
+    .table-actions { display:flex; gap:8px; align-items:center; }
+    .select, .search-input { min-height:33px; padding:0 10px; border:1px solid var(--border); border-radius:9px; background:#0d192a; color:#dce7f6; font-size:11px; }
+    .search-input { width:170px; }
+    .table-wrap { width:100%; overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; text-align:left; }
+    th { padding:13px 9px 10px; color:#8498b4; font-size:9px; font-weight:750; letter-spacing:.65px; white-space:nowrap; }
+    td { padding:11px 9px; border-top:1px solid #26364d; color:#dae4f3; font-size:11px; vertical-align:middle; }
+    .asset-cell { min-width:190px; }
+    .asset-main { font-size:11px; font-weight:690; }
+    .asset-meta, .evidence-meta { margin-top:4px; color:var(--muted); font-size:10px; }
+    .evidence-main { min-width:180px; color:#d4deee; font-size:10px; line-height:1.45; }
+    .risk-pill, .status-pill { display:inline-flex; align-items:center; justify-content:center; padding:5px 8px; border-radius:15px; font-size:9px; font-weight:750; white-space:nowrap; }
+    .risk-critical { background:#502832; color:#ff9ba8; }
+    .risk-high { background:#4a392a; color:#ffd085; }
+    .risk-medium { background:#403351; color:#d4b3ff; }
+    .risk-low { background:#173b39; color:#71e3b6; }
+    .status-open { background:#213047; color:#c0cede; }
+    .status-investigating { background:#183956; color:#78d9ff; }
+    .status-reviewed { background:#173b39; color:#71e3b6; }
+    .row-actions { display:flex; gap:6px; }
+    .text-button { padding:5px 7px; border:0; border-radius:7px; background:transparent; color:#8fdfff; font-size:10px; font-weight:700; cursor:pointer; }
+    .text-button:hover { background:#19324b; }
+    .empty-state { padding:28px; color:var(--muted); text-align:center; font-size:12px; }
+    .bottom-layout { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr); gap:15px; margin-top:15px; }
+    .architecture { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:7px; margin-top:15px; }
+    .arch-step { position:relative; min-height:72px; padding:10px 8px; border:1px solid #293d57; border-radius:10px; background:#0e1b2e; }
+    .arch-step strong { display:block; margin-bottom:6px; color:#a9dbff; font-size:10px; }
+    .arch-step span { color:#91a2bd; font-size:9px; line-height:1.4; }
+    .arch-step:not(:last-child)::after { content:"›"; position:absolute; top:20px; right:-8px; z-index:1; color:#56d3f5; font-size:19px; }
+    .score-summary { display:flex; align-items:center; gap:14px; margin:16px 0 12px; padding:12px; border:1px solid #473444; border-radius:11px; background:#191f34; }
+    .score-circle { width:48px; height:48px; display:grid; place-items:center; flex:none; border:3px solid #ff778a; border-radius:50%; color:#ffadba; font-size:16px; font-weight:800; }
+    .score-title { color:#ffabb5; font-size:11px; font-weight:760; }
+    .score-copy { margin-top:4px; color:var(--muted); font-size:10px; }
+    .reason-list { display:grid; gap:9px; margin:0 0 15px; padding:0; list-style:none; }
+    .reason-list li { display:flex; gap:8px; align-items:baseline; color:#cbd7e8; font-size:10px; line-height:1.4; }
+    .reason-dot { color:var(--red); }
+    .footer { display:flex; justify-content:space-between; gap:12px; margin-top:16px; color:#71839e; font-size:9px; }
+    .page-view { display:none; }
+    .page-view.active { display:block; }
+    .section-heading { margin:4px 0 16px; font-size:21px; }
+    .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+    .field { display:grid; gap:6px; }
+    .field.full { grid-column:1/-1; }
+    .field label { color:#aebbd0; font-size:11px; font-weight:650; }
+    .field input, .field select, .field textarea { width:100%; min-height:38px; padding:9px 11px; border:1px solid var(--border); border-radius:9px; background:#0d192a; color:var(--text); font-size:12px; }
+    .field textarea { min-height:82px; resize:vertical; }
+    .form-help { color:var(--muted); font-size:10px; line-height:1.5; }
+    .form-footer { display:flex; align-items:center; gap:9px; margin-top:16px; }
+    .asset-chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+    .chip { padding:6px 9px; border:1px solid #2a3e59; border-radius:15px; background:#102038; color:#c3d3e8; font-size:10px; }
+    .toast { position:fixed; right:22px; bottom:22px; z-index:20; max-width:min(370px,calc(100vw - 36px)); padding:12px 16px; border:1px solid #375273; border-radius:11px; background:#142a43; color:#edf5ff; box-shadow:0 8px 28px #0005; font-size:12px; opacity:0; transform:translateY(10px); pointer-events:none; transition:opacity .2s,transform .2s; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .modal-backdrop { position:fixed; inset:0; z-index:15; display:none; place-items:center; padding:18px; background:#030916bf; backdrop-filter:blur(4px); }
+    .modal-backdrop.show { display:grid; }
+    .modal { width:min(550px,100%); max-height:90vh; overflow:auto; padding:21px; border:1px solid #344965; border-radius:17px; background:#111e32; box-shadow:0 20px 70px #0008; }
+    .modal-head { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:16px; }
+    .modal-head h2 { margin:0; font-size:17px; }
+    .close-button { width:31px; height:31px; border:1px solid var(--border); border-radius:9px; background:#14243b; color:#d3deed; font-size:17px; cursor:pointer; }
+    .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+    .notice { margin:0 0 16px; padding:11px 12px; border:1px solid #315174; border-radius:10px; background:#10223b; color:#a9c5e4; font-size:11px; line-height:1.55; }
+    .live-source { margin-bottom:12px; padding:15px 17px; }
+    .live-source-top { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+    .live-source-title { display:flex; flex-wrap:wrap; align-items:center; gap:9px; font-size:12px; font-weight:720; }
+    .live-label { padding:4px 7px; border-radius:12px; background:#153b36; color:#65dfb1; font-size:9px; font-weight:750; letter-spacing:.4px; }
+    .live-status { margin:10px 0 0; color:var(--muted); font-size:10px; line-height:1.5; }
+    .live-status.success { color:#6ee0b3; }
+    .live-status.error { color:#ff9ba8; }
+    .country-field { display:flex; align-items:center; gap:8px; color:#aebbd0; font-size:10px; white-space:nowrap; }
+    .country-field .select { min-height:31px; }
+    .external-link { color:#8fdfff; font-weight:650; text-decoration:none; }
+    .external-link:hover { text-decoration:underline; }
+    @media(max-width:1100px) {
+      .sidebar { width:210px; }
+      .main { margin-left:210px; padding-right:22px; padding-left:22px; }
+      .cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .layout { grid-template-columns:1fr; }
+      .bottom-layout { grid-template-columns:1fr; }
+    }
+    @media(max-width:700px) {
+      .sidebar { position:sticky; inset:0 0 auto; width:auto; height:auto; padding:10px 12px; border-right:0; border-bottom:1px solid #1c2a40; }
+      .brand-lockup { padding:0 4px 9px; }
+      .shield { width:31px; height:35px; font-size:16px; }
+      .brand-name { font-size:14px; }
+      .brand-sub { font-size:8px; }
+      .nav-caption, .sidebar-bottom { display:none; }
+      .nav { grid-template-columns:repeat(5,max-content); gap:4px; overflow-x:auto; }
+      .nav button { width:auto; gap:6px; padding:8px 9px; font-size:10px; white-space:nowrap; }
+      .nav-icon { font-size:13px; }
+      .main { margin-left:0; padding:21px 14px 18px; }
+      .topline { font-size:9px; }
+      .title-row { align-items:flex-start; flex-direction:column; margin-bottom:17px; }
+      .title-row>.top-actions { width:100%; }
+      .cards { gap:9px; }
+      .metric { min-height:103px; padding:12px; }
+      .metric-top { gap:6px; font-size:8px; }
+      .metric-icon { width:24px; height:24px; }
+      .metric-bottom { gap:7px; margin-left:30px; }
+      .metric-value { font-size:24px; }
+      .metric-detail { font-size:9px; }
+      .panel { padding:14px; }
+      .panel-heading { flex-wrap:wrap; }
+      .chart-wrap { height:160px; }
+      .official-list { grid-template-columns:1fr; }
+      .table-panel { padding:14px 10px 7px; }
+      .table-actions { width:100%; flex-wrap:wrap; }
+      .search-input { flex:1; min-width:130px; }
+      .architecture { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .arch-step:not(:last-child)::after { display:none; }
+      .form-grid { grid-template-columns:1fr; }
+      .field.full { grid-column:auto; }
+      .footer { flex-direction:column; }
+    }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand-lockup"><div class="shield" aria-hidden="true">✓</div><div><div class="brand-name">BrandShield AI</div><div class="brand-sub">DIGITAL RISK PROTECTION</div></div></div>
+      <div class="nav-caption">WORKSPACE</div>
+      <nav class="nav">
+        <button class="active" data-view="dashboard"><span class="nav-icon">◈</span>Overview</button>
+        <button data-view="social"><span class="nav-icon">◎</span>Social monitoring</button>
+        <button data-view="apps"><span class="nav-icon">▣</span>App monitoring</button>
+        <button data-view="investigations"><span class="nav-icon">⚑</span>Investigations</button>
+        <button data-view="brand"><span class="nav-icon">◇</span>Brand profile</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="nav-caption">DEMO ENVIRONMENT</div>
+        <div class="demo-card"><div class="demo-heading"><span class="live-dot"></span><span id="backend-status">Checking database…</span></div><p class="demo-note" id="backend-note">SQLite API persistence and public Bluesky and Apple App Store searches.</p></div>
+        <div class="team"><div class="avatar">TR</div><div><div class="team-name">Team REBELS</div><div class="team-role">Security analyst</div></div></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topline"><span>BRAND PROTECTION <span aria-hidden="true">/</span> <span id="crumb-brand">NOVAPAY</span></span><div class="top-actions"><button class="button small" id="demo-scan">↻ Run demo scan</button><button class="button small primary" id="add-asset-top">＋ Analyze asset</button></div></div>
+
+      <section class="page-view active" id="view-dashboard">
+        <div class="title-row"><div><h1>Threat intelligence overview</h1><p class="subtitle">Spot impersonation early. Prioritize risk. Protect the people who trust your brand.</p></div><div class="top-actions"><span class="chip">◉ &nbsp;Demo workspace</span></div></div>
+        <div class="cards" id="metrics"></div>
+        <div class="layout">
+          <section class="panel">
+            <div class="panel-heading"><div><h2 class="panel-title">Risk signals over time</h2><p class="panel-subtitle">Potential impersonation indicators · last 7 days</p></div><div class="legend"><span><i></i>Social profiles</span><span><i class="violet"></i>Mobile apps</span></div></div>
+            <div class="chart-wrap"><svg class="chart" viewBox="0 0 700 190" preserveAspectRatio="none" role="img" aria-label="Sample trend chart showing potential detections increasing over the last seven days"><g class="chart-grid"><path d="M38 25H690M38 65H690M38 105H690M38 145H690"/><path d="M38 20V150M145 20V150M253 20V150M361 20V150M469 20V150M577 20V150M690 20V150"/></g><g><text x="7" y="29">30</text><text x="7" y="69">20</text><text x="7" y="109">10</text><text x="17" y="149">0</text><text x="38" y="174">OCT 07</text><text x="143" y="174">OCT 08</text><text x="251" y="174">OCT 09</text><text x="359" y="174">OCT 10</text><text x="467" y="174">OCT 11</text><text x="575" y="174">OCT 12</text><text x="658" y="174">TODAY</text></g><path class="chart-social" d="M38 125 C82 119 103 96 145 105 S208 126 253 91 S316 100 361 75 S424 89 469 61 S532 77 577 49 S640 61 690 30"/><path class="chart-apps" d="M38 141 C82 135 103 128 145 132 S208 143 253 119 S316 137 361 112 S424 123 469 99 S532 112 577 89 S640 103 690 76"/></svg></div>
+          </section>
+          <section class="panel" id="brand-summary"></section>
+        </div>
+        <section class="panel table-panel">
+          <div class="panel-heading"><div><h2 class="panel-title">Priority investigations</h2><p class="panel-subtitle">Ranked by explainable risk signals</p></div><div class="table-actions"><input class="search-input" id="dashboard-search" type="search" placeholder="Search assets…" aria-label="Search alerts"><select class="select" id="dashboard-filter" aria-label="Filter alerts by risk"><option value="all">All risk levels</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select></div></div>
+          <div id="dashboard-table"></div>
+        </section>
+        <div class="bottom-layout">
+          <section class="panel"><h2 class="panel-title">How BrandShield works</h2><p class="panel-subtitle">An explainable, brand-aware review workflow</p><div class="architecture"><div class="arch-step"><strong>01 · Brand</strong><span>Company, logo &amp; official assets</span></div><div class="arch-step"><strong>02 · Collect</strong><span>Public APIs, demo data &amp; submissions</span></div><div class="arch-step"><strong>03 · Detect</strong><span>Name, text &amp; publisher signals</span></div><div class="arch-step"><strong>04 · Exclude</strong><span>Suppress registered official assets</span></div><div class="arch-step"><strong>05 · Review</strong><span>Risk score, evidence &amp; status</span></div></div></section>
+          <section class="panel" id="spotlight"></section>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-social">
+        <div class="title-row"><div><h1>Social monitoring</h1><p class="subtitle">Review Bluesky public search results, sample profiles, and analyst submissions.</p></div><div class="top-actions"><button class="button" id="live-social-search">↻ Search Bluesky</button><button class="button primary" data-add-kind="social">＋ Analyze social profile</button></div></div>
+        <section class="panel live-source"><div class="live-source-top"><div><div class="live-source-title">Bluesky public profile search <span class="live-label">LIVE · NO KEY</span></div><p class="panel-subtitle">Searches public Bluesky profiles using your saved brand name. A name match is a lead for review, not proof of impersonation.</p></div></div><p id="social-live-status" class="live-status" role="status" aria-live="polite">Ready to search the public Bluesky directory.</p></section>
+        <section class="panel table-panel"><div class="panel-heading"><div><h2 class="panel-title">Social profile signals</h2><p class="panel-subtitle">Includes seeded examples and assets you submit</p></div><select class="select section-filter" aria-label="Filter social profile risk"><option value="all">All risk levels</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select></div><div id="social-table"></div></section>
+      </section>
+      <section class="page-view" id="view-apps">
+        <div class="title-row"><div><h1>App monitoring</h1><p class="subtitle">Review public Apple App Store listings, sample apps, and analyst submissions.</p></div><div class="top-actions"><button class="button" id="live-app-search">↻ Search App Store</button><button class="button primary" data-add-kind="app">＋ Analyze mobile app</button></div></div>
+        <section class="panel live-source"><div class="live-source-top"><div><div class="live-source-title">Apple App Store search <span class="live-label">LIVE · NO KEY</span></div><p class="panel-subtitle">Searches public iOS app listings. Google Play has no public anonymous search API; use manual analysis or demo examples there.</p></div><label class="country-field" for="app-country">Storefront<select id="app-country" class="select" aria-label="Apple App Store country"><option value="us">United States</option><option value="in">India</option><option value="gb">United Kingdom</option><option value="ca">Canada</option><option value="au">Australia</option></select></label></div><p id="app-live-status" class="live-status" role="status" aria-live="polite">Ready to search public Apple App Store listings.</p></section>
+        <section class="panel table-panel"><div class="panel-heading"><div><h2 class="panel-title">Mobile app signals</h2><p class="panel-subtitle">Publisher mismatches are review signals, not proof of fraud</p></div><select class="select section-filter" aria-label="Filter mobile app risk"><option value="all">All risk levels</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select></div><div id="apps-table"></div></section>
+      </section>
+      <section class="page-view" id="view-investigations">
+        <div class="title-row"><div><h1>Investigations</h1><p class="subtitle">Track your review queue and analyst decisions.</p></div></div>
+        <section class="panel table-panel"><div class="panel-heading"><div><h2 class="panel-title">All flagged assets</h2><p class="panel-subtitle">Select an asset to view evidence and manage its status</p></div><select class="select section-filter" aria-label="Filter investigation risk"><option value="all">All risk levels</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select></div><div id="investigations-table"></div></section>
+      </section>
+      <section class="page-view" id="view-brand">
+        <div class="title-row"><div><h1>Brand profile</h1><p class="subtitle">Set a trusted reference and exclude your registered official accounts and apps.</p></div></div>
+        <div class="layout">
+          <section class="panel"><h2 class="panel-title">Brand identity</h2><p class="panel-subtitle">Used as the reference for every analysis</p><form id="brand-form" style="margin-top:18px"><div class="form-grid">
+            <div class="field"><label for="brand-name-input">Company / brand name</label><input id="brand-name-input" name="name" required maxlength="60" placeholder="e.g. NovaPay"></div>
+            <div class="field"><label for="brand-website-input">Official website</label><input id="brand-website-input" name="website" type="url" maxlength="200" placeholder="https://example.com"></div>
+            <div class="field full"><label for="brand-logo-input">Official logo image (optional)</label><input id="brand-logo-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><span class="form-help">Image stays in this browser. Maximum 1 MB.</span></div>
+          </div><div class="form-footer"><button class="button primary" type="submit">Save brand profile</button><button class="button" type="button" id="clear-logo">Remove logo</button></div></form></section>
+          <section class="panel"><h2 class="panel-title">Official accounts &amp; apps</h2><p class="panel-subtitle">Verified matches are excluded from the alert queue.</p>
+            <form id="official-form" style="margin-top:17px"><div class="form-grid">
+              <div class="field"><label for="official-type">Asset type</label><select id="official-type"><option value="social">Social account</option><option value="app">Mobile app</option></select></div>
+              <div class="field"><label for="official-platform">Platform / store</label><input id="official-platform" required maxlength="40" placeholder="e.g. Instagram"></div>
+              <div class="field"><label for="official-identifier">Official username / app</label><input id="official-identifier" required maxlength="80" placeholder="@NovaPay"></div>
+              <div class="field"><label for="official-publisher">Publisher / developer (optional)</label><input id="official-publisher" maxlength="80" placeholder="Official developer name"></div>
+            </div><div class="form-footer"><button class="button" type="submit">＋ Register official asset</button></div></form>
+            <div class="official-label" style="margin-top:18px">REGISTERED ASSETS</div><div class="asset-chips" id="official-chips"></div>
+          </section>
+        </div>
+      </section>
+
+      <footer class="footer"><span>BRANDSHIELD AI · Live lookups: Bluesky + Apple App Store · Other sources: demo/manual</span><span>DETECT · REVIEW · PROTECT</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="asset-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal"><div class="modal-head"><h2 id="modal-title">Analyze an asset</h2><button class="close-button" type="button" id="modal-close" aria-label="Close">×</button></div><p class="notice">Manual analysis uses explainable risk rules. With the SQLite backend connected, scoring runs through the REST API and results are saved to the local database. Results are leads for human review, not proof of wrongdoing.</p>
+      <form id="asset-form"><div class="form-grid">
+        <div class="field"><label for="asset-kind">Asset type</label><select id="asset-kind" name="kind"><option value="social">Social profile</option><option value="app">Mobile app</option></select></div>
+        <div class="field"><label for="asset-platform">Platform / store</label><input id="asset-platform" name="platform" required maxlength="40" placeholder="e.g. Instagram or Play Store"></div>
+        <div class="field"><label for="asset-name">Profile / application name</label><input id="asset-name" name="name" required maxlength="100" placeholder="e.g. NovaPay Support"></div>
+        <div class="field"><label for="asset-handle">Username / package ID (optional)</label><input id="asset-handle" name="handle" maxlength="120" placeholder="@account or com.example.app"></div>
+        <div class="field full"><label for="asset-description">Bio or app description</label><textarea id="asset-description" name="description" maxlength="500" placeholder="Paste a public description or note observable warning signs…"></textarea></div>
+        <div class="field"><label for="asset-publisher">Publisher / developer (apps)</label><input id="asset-publisher" name="publisher" maxlength="100" placeholder="Developer name"></div>
+        <div class="field"><label for="asset-age">Account / listing age</label><select id="asset-age" name="age"><option value="unknown">Unknown</option><option value="new">New (under 30 days)</option><option value="established">Established (30+ days)</option></select></div>
+      </div><div class="modal-actions"><button class="button quiet" type="button" id="modal-cancel">Cancel</button><button class="button primary" type="submit">Analyze asset</button></div></form>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+      const STORE_KEY = "brandshield-ai-demo-v1";
+      const initial = {
+        brand: { name: "NovaPay", website: "https://www.novapay.com", logo: "" },
+        official: [
+          { kind: "social", platform: "Instagram", identifier: "@NovaPay", publisher: "" },
+          { kind: "social", platform: "X", identifier: "@NovaPay", publisher: "" },
+          { kind: "app", platform: "iOS App Store", identifier: "NovaPay Wallet", publisher: "NovaPay Inc." }
+        ],
+        alerts: [
+          { id: "demo-1", kind: "social", platform: "X", name: "@NovaPay_Support", handle: "@NovaPay_Support", description: "Official NovaPay customer support. DM your account details for help.", publisher: "", age: "new", score: 92, reasons: ["Look-alike username closely matches the brand", "Claims official customer support", "Requests sensitive information", "New account; verify before trusting"], status: "Investigating", source: "Demo sample" },
+          { id: "demo-2", kind: "app", platform: "Google Play", name: "Nova Pay Rewards", handle: "com.rewards.novapay", description: "Get NovaPay rewards and manage your wallet.", publisher: "Rewards Hub Studio", age: "unknown", score: 76, reasons: ["Application name closely resembles the brand", "Publisher is not registered as official"], status: "Open", source: "Demo sample" },
+          { id: "demo-3", kind: "social", platform: "Instagram", name: "N0vaPay Help", handle: "@n0vapay_help", description: "NovaPay help desk — message us to unlock your payment.", publisher: "", age: "new", score: 68, reasons: ["Character substitution in brand name", "Uses support and account-help language", "Recently created account"], status: "Open", source: "Demo sample" },
+          { id: "demo-4", kind: "app", platform: "Google Play", name: "NovaPay Lite", handle: "com.novapay.lite", description: "A lightweight payment tracker for NovaPay customers.", publisher: "Blue Peak Apps", age: "established", score: 51, reasons: ["Brand name appears in an unregistered app listing", "Developer is not on the official publisher list"], status: "Open", source: "Demo sample" },
+          { id: "demo-5", kind: "social", platform: "Facebook", name: "NovaPay Giveaways", handle: "@novapay.prize", description: "Claim your prize. Send your verification code to get started.", publisher: "", age: "unknown", score: 46, reasons: ["Prize claim and verification-code language may be suspicious", "Brand reference in an unregistered profile"], status: "Open", source: "Demo sample" },
+          { id: "demo-6", kind: "social", platform: "X", name: "NovaPay", handle: "@NovaPay", description: "Official NovaPay account.", publisher: "", age: "established", score: 0, reasons: [], status: "Excluded — official", source: "Registered official asset" },
+          { id: "demo-7", kind: "app", platform: "iOS App Store", name: "NovaPay Wallet", handle: "com.novapay.wallet", description: "The official NovaPay wallet.", publisher: "NovaPay Inc.", age: "established", score: 0, reasons: [], status: "Excluded — official", source: "Registered official asset" }
+        ]
+      };
+
+      const $ = (selector, parent = document) => parent.querySelector(selector);
+      const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
+      const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+      const clean = (value) => String(value ?? "").trim();
+      const newId = () => window.crypto?.randomUUID?.() || `asset-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      let apiConnected = false;
+      let apiWriteQueue = Promise.resolve();
+
+      async function requestApi(endpoint, options = {}) {
+        let response;
+        try {
+          response = await fetch(endpoint, {
+            ...options,
+            headers: { Accept: "application/json", ...(options.body ? { "Content-Type": "application/json" } : {}), ...options.headers }
+          });
+        } catch (error) {
+          throw new Error(`Could not reach the BrandShield backend: ${error.message}`);
+        }
+        let payload;
+        try {
+          payload = await response.json();
+        } catch {
+          throw new Error(`BrandShield backend returned an invalid response (HTTP ${response.status}).`);
+        }
+        if (!response.ok) throw new Error(payload.error || `BrandShield backend returned HTTP ${response.status}.`);
+        return payload;
+      }
+
+      function loadState() {
+        try {
+          const saved = localStorage.getItem(STORE_KEY);
+          if (!saved) return structuredClone(initial);
+          const parsed = JSON.parse(saved);
+          if (!parsed || typeof parsed !== "object" || !parsed.brand || !Array.isArray(parsed.official) || !Array.isArray(parsed.alerts)) throw new Error("Saved dashboard data has an unexpected format.");
+          return parsed;
+        } catch (error) {
+          console.error("Could not load saved BrandShield data.", error);
+          return structuredClone(initial);
+        }
+      }
+      let state = loadState();
+      let toastTimer;
+      let selectedAlertId = state.alerts.find((item) => item.score > 0)?.id || null;
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        } catch (error) {
+          console.error("Could not save BrandShield data.", error);
+          notify("Could not save to this browser. Try removing a large logo image.");
+        }
+        if (apiConnected) {
+          const snapshot = JSON.stringify(state);
+          apiWriteQueue = apiWriteQueue.then(() => requestApi("/api/state", { method: "PUT", body: snapshot }))
+            .catch((error) => {
+              console.error("Could not persist BrandShield data to SQLite.", error);
+              notify(`SQLite save failed: ${error.message}`);
+            });
+        }
+      }
+      function normalize(value) {
+        return String(value ?? "").toLocaleLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[@]/g, "").replace(/[0]/g, "o").replace(/[^a-z0-9]/g, "");
+      }
+      function similarity(left, right) {
+        const a = normalize(left), b = normalize(right);
+        if (!a || !b) return 0;
+        if (a === b) return 1;
+        if (a.includes(b) || b.includes(a)) return Math.min(a.length, b.length) / Math.max(a.length, b.length) * .92;
+        const previous = Array.from({ length: b.length + 1 }, (_, i) => i);
+        for (let i = 1; i <= a.length; i++) {
+          let diagonal = previous[0];
+          previous[0] = i;
+          for (let j = 1; j <= b.length; j++) {
+            const above = previous[j];
+            previous[j] = Math.min(previous[j] + 1, previous[j - 1] + 1, diagonal + (a[i - 1] === b[j - 1] ? 0 : 1));
+            diagonal = above;
+          }
+        }
+        return 1 - previous[b.length] / Math.max(a.length, b.length);
+      }
+      function officialMatch(candidate) {
+        return state.official.some((official) => {
+          if (official.kind !== candidate.kind) return false;
+          const sameIdentifier = normalize(official.identifier) === normalize(candidate.handle) || normalize(official.identifier) === normalize(candidate.name);
+          const samePlatform = !official.platform || !candidate.platform || platformKey(official.platform) === platformKey(candidate.platform);
+          const samePublisher = !official.publisher || !candidate.publisher || normalize(official.publisher) === normalize(candidate.publisher);
+          return sameIdentifier && samePlatform && (candidate.kind !== "app" || samePublisher);
+        });
+      }
+      function platformKey(platform) {
+        const value = normalize(platform);
+        if (value.includes("bluesky")) return "bluesky";
+        if (value.includes("appstore") || value.includes("itunes")) return "applestore";
+        if (value.includes("googleplay")) return "googleplay";
+        return value;
+      }
+      function safeExternalUrl(value) {
+        if (!value) return "";
+        try {
+          const url = new URL(value);
+          return url.protocol === "https:" && (url.hostname === "bsky.app" || url.hostname === "apps.apple.com") ? url.href : "";
+        } catch {
+          return "";
+        }
+      }
+      function assess(candidate) {
+        const brand = state.brand.name;
+        const brandKey = normalize(brand);
+        const labelSimilarity = Math.max(
+          similarity(candidate.name, brand),
+          similarity(candidate.handle, brand),
+          ...[candidate.name, candidate.handle].map((value) => brandKey && normalize(value).startsWith(brandKey) ? .92 : 0)
+        );
+        const descriptionSimilarity = similarity(candidate.description, brand);
+        const reasons = [];
+        let score = 0;
+        if (labelSimilarity >= .9) { score += 48; reasons.push("Name or username is a close look-alike of the brand"); }
+        else if (labelSimilarity >= .72) { score += 34; reasons.push("Name or username resembles the brand"); }
+        else if (labelSimilarity >= .48) { score += 18; reasons.push("Name or username contains a partial brand match"); }
+        const description = candidate.description.toLocaleLowerCase();
+        const brandMention = normalize(description).includes(normalize(brand));
+        if (brandMention && descriptionSimilarity > .08) { score += 12; reasons.push("Description refers to the protected brand"); }
+        const urgency = /\b(support|help|verify|verification|claim|prize|giveaway|unlock|refund|official|urgent|dm|wallet)\b/i.test(description);
+        if (urgency) { score += 16; reasons.push("Description uses support, urgency, or prize-claim language"); }
+        if (/\b(password|passcode|otp|verification code|seed phrase|bank details|account details)\b/i.test(description)) { score += 22; reasons.push("Requests sensitive credentials or account information"); }
+        if (candidate.kind === "app" && candidate.publisher && !state.official.some((item) => item.kind === "app" && item.publisher && normalize(item.publisher) === normalize(candidate.publisher))) {
+          score += 19; reasons.push("App developer does not match a registered official publisher");
+        }
+        if (candidate.kind === "app" && !candidate.publisher) { score += 8; reasons.push("App publisher was not provided for verification"); }
+        if (candidate.age === "new") { score += 13; reasons.push("Recently created account or listing"); }
+        score = Math.max(0, Math.min(100, score));
+        if (!reasons.length) reasons.push("No strong impersonation indicators found; manually verify if uncertain");
+        return { score, reasons };
+      }
+      function level(score) { return score >= 85 ? "Critical" : score >= 65 ? "High" : score >= 40 ? "Medium" : "Low"; }
+      function levelClass(score) { return `risk-${level(score).toLocaleLowerCase()}`; }
+      function badge(score) { return `<span class="risk-pill ${levelClass(score)}">${score} ${esc(level(score))}</span>`; }
+      function statusBadge(status) {
+        const cls = status.startsWith("Investigating") ? "status-investigating" : status.startsWith("Reviewed") || status.startsWith("Excluded") ? "status-reviewed" : "status-open";
+        return `<span class="status-pill ${cls}">${esc(status)}</span>`;
+      }
+      function isOfficial(alert) { return alert.status.startsWith("Excluded"); }
+      function alertMatches(alert, filter, search) {
+        if (filter !== "all" && level(alert.score) !== filter) return false;
+        const haystack = `${alert.name} ${alert.handle} ${alert.platform} ${alert.description} ${alert.status}`.toLocaleLowerCase();
+        return !search || haystack.includes(search.toLocaleLowerCase());
+      }
+      function renderTable(items, target, options = {}) {
+        const filtered = items.filter((item) => alertMatches(item, options.filter || "all", options.search || ""));
+        if (!filtered.length) { target.innerHTML = `<div class="empty-state">No matching assets. Try another filter or analyze an asset.</div>`; return; }
+        target.innerHTML = `<div class="table-wrap"><table><thead><tr><th>SUSPECTED ASSET</th><th>DETECTION EVIDENCE</th><th>RISK</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody>${filtered.map((item) => {
+          const kindName = item.kind === "app" ? "Mobile app" : "Social profile";
+          const evidence = item.reasons.slice(0, 2).join(" · ");
+          const statusAction = item.status === "Open" ? "Investigate" : item.status.startsWith("Investigating") ? "Review" : "Details";
+          const externalUrl = safeExternalUrl(item.url);
+          const assetName = externalUrl ? `<a class="external-link" href="${esc(externalUrl)}" target="_blank" rel="noopener noreferrer">${esc(item.name)} ↗</a>` : esc(item.name);
+          return `<tr><td class="asset-cell"><div class="asset-main">${assetName}</div><div class="asset-meta">${esc(kindName)} · ${esc(item.platform)} · ${esc(item.source)}</div></td><td><div class="evidence-main">${esc(evidence || "Registered official asset; excluded from alerts")}</div><div class="evidence-meta">${esc(item.handle || item.publisher || "No username supplied")}</div></td><td>${isOfficial(item) ? `<span class="risk-pill risk-low">Official</span>` : badge(item.score)}</td><td>${statusBadge(item.status)}</td><td><div class="row-actions"><button class="text-button" data-action="inspect" data-id="${esc(item.id)}">${statusAction}</button>${!isOfficial(item) && !item.status.startsWith("Reviewed") ? `<button class="text-button" data-action="review" data-id="${esc(item.id)}">Mark reviewed</button>` : ""}</div></td></tr>`;
+        }).join("")}</tbody></table></div>`;
+      }
+      function renderMetrics() {
+        const suspicious = state.alerts.filter((item) => !isOfficial(item));
+        const high = suspicious.filter((item) => item.score >= 65).length;
+        const social = state.alerts.filter((item) => item.kind === "social").length;
+        const apps = state.alerts.filter((item) => item.kind === "app").length;
+        const cards = [
+          ["⌁", "ASSETS ANALYZED", state.alerts.length + state.official.length, "Registered + submitted", ""],
+          ["!", "NEEDS REVIEW", suspicious.filter((item) => !item.status.startsWith("Reviewed")).length, `${high} high priority`, "red"],
+          ["◎", "SOCIAL PROFILES", social + state.official.filter((item) => item.kind === "social").length, `${state.official.filter((item) => item.kind === "social").length} protected official`, "purple"],
+          ["▣", "MOBILE APPS", apps + state.official.filter((item) => item.kind === "app").length, `${state.official.filter((item) => item.kind === "app").length} protected official`, "green"]
+        ];
+        $("#metrics").innerHTML = cards.map(([icon,label,value,detail,color]) => `<article class="card metric"><div class="metric-top"><span class="metric-icon ${color}">${icon}</span>${label}</div><div class="metric-bottom"><span class="metric-value">${value}</span><span class="metric-detail">${esc(detail)}</span></div></article>`).join("");
+      }
+      function renderBrand() {
+        const brand = state.brand;
+        $("#crumb-brand").textContent = brand.name.toLocaleUpperCase();
+        const logo = brand.logo ? `<img src="${esc(brand.logo)}" alt="">` : "✓";
+        const official = state.official.slice(0, 3).map((item) => `<div class="official-item"><strong>${esc(item.identifier)}</strong><span>${esc(item.platform)} · official</span></div>`).join("");
+        $("#brand-summary").innerHTML = `<div class="panel-heading"><div><h2 class="panel-title">Brand integrity</h2><p class="panel-subtitle">Reference profile used for matching</p></div><button class="button small quiet" data-view-jump="brand">Edit profile</button></div><div class="profile-top"><div class="profile-logo">${logo}</div><div><div class="profile-name">${esc(brand.name)}</div><div class="profile-website">${esc(brand.website || "Add official website")} · profile reference</div></div><span class="protected">${state.official.length} protected</span></div><div class="official-label">REGISTERED OFFICIAL ASSETS</div><div class="official-list">${official || `<div class="empty-state">No registered assets yet.</div>`}</div>`;
+        $("#spotlight").innerHTML = `<h2 class="panel-title">Risk scoring guidance</h2><p class="panel-subtitle">Scores prioritize analyst review, not proof of wrongdoing.</p><div class="score-summary"><div class="score-circle">AI</div><div><div class="score-title">Explainable signal scoring</div><div class="score-copy">Name similarity · suspicious wording · publisher</div></div></div><ul class="reason-list"><li><span class="reason-dot">●</span>Similar name or account handle</li><li><span class="reason-dot" style="color:var(--orange)">●</span>Support, urgency, or credential requests</li><li><span class="reason-dot" style="color:var(--violet)">●</span>Unrecognized mobile app publisher</li></ul><button class="button small" data-view-jump="investigations">Open investigations →</button>`;
+      }
+      function render() {
+        renderMetrics();
+        renderBrand();
+        const activeFilter = $("#dashboard-filter")?.value || "all";
+        const search = $("#dashboard-search")?.value || "";
+        const investigations = state.alerts.filter((item) => !isOfficial(item));
+        renderTable(investigations.slice().sort((a,b) => b.score-a.score), $("#dashboard-table"), {filter:activeFilter, search});
+        const activePage = $(".page-view.active")?.id;
+        const sectionFilter = $(".page-view.active .section-filter")?.value || "all";
+        if (activePage === "view-social") renderTable(state.alerts.filter((item) => item.kind === "social"), $("#social-table"), {filter:sectionFilter});
+        if (activePage === "view-apps") renderTable(state.alerts.filter((item) => item.kind === "app"), $("#apps-table"), {filter:sectionFilter});
+        if (activePage === "view-investigations") renderTable(investigations, $("#investigations-table"), {filter:sectionFilter});
+        $("#official-chips").innerHTML = state.official.length ? state.official.map((item,index) => `<span class="chip">${esc(item.kind === "app" ? "App" : "Social")} · ${esc(item.identifier)} <button type="button" aria-label="Remove ${esc(item.identifier)} from official assets" data-remove-official="${index}" style="border:0;background:none;color:#ff9aa8;cursor:pointer">×</button></span>`).join("") : `<span class="form-help">No official assets registered yet.</span>`;
+        $("#brand-name-input").value = state.brand.name;
+        $("#brand-website-input").value = state.brand.website || "";
+      }
+      function notify(message) {
+        const toast = $("#toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+      }
+      async function initializeBackend() {
+        if (window.location.protocol === "file:") {
+          $("#backend-status").textContent = "Browser-only mode";
+          $("#backend-note").textContent = "Open with node server.js to enable the SQLite database and server-side public API lookups.";
+          return;
+        }
+        try {
+          await requestApi("/api/health", { signal: AbortSignal.timeout(4000) });
+          const saved = await requestApi("/api/state", { signal: AbortSignal.timeout(4000) });
+          if (!saved?.brand || !Array.isArray(saved.official) || !Array.isArray(saved.alerts)) {
+            throw new Error("The backend returned an invalid saved state.");
+          }
+          state = saved;
+          apiConnected = true;
+          $("#backend-status").textContent = "SQLite backend connected";
+          $("#backend-note").textContent = "Saved brand and investigations · live Bluesky and App Store API lookups.";
+          render();
+        } catch (error) {
+          console.error("BrandShield backend is unavailable; using browser-local mode.", error);
+          $("#backend-status").textContent = "Browser-only mode";
+          $("#backend-note").textContent = `SQLite backend unavailable: ${error.message}`;
+        }
+      }
+      function setLiveStatus(kind, message, stateClass = "") {
+        const status = $(`#${kind}-live-status`);
+        status.textContent = message;
+        status.className = `live-status${stateClass ? ` ${stateClass}` : ""}`;
+      }
+      async function fetchPublicJson(url) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        try {
+          const response = await fetch(url, {
+            method: "GET",
+            mode: "cors",
+            headers: { Accept: "application/json" },
+            signal: controller.signal
+          });
+          if (!response.ok) throw new Error(`Public API returned HTTP ${response.status}.`);
+          try {
+            return await response.json();
+          } catch (error) {
+            throw new Error("The public API returned invalid JSON.", { cause: error });
+          }
+        } finally {
+          clearTimeout(timeout);
+        }
+      }
+      function saveLiveResults(candidates) {
+        let added = 0;
+        let updated = 0;
+        let excluded = 0;
+        for (const candidate of candidates) {
+          const result = assess(candidate);
+          const official = officialMatch(candidate);
+          const existingIndex = state.alerts.findIndex((item) => item.id === candidate.id);
+          const existing = existingIndex >= 0 ? state.alerts[existingIndex] : null;
+          const status = official ? "Excluded — official" : existing?.status.startsWith("Reviewed") ? existing.status : existing?.status.startsWith("Investigating") ? existing.status : "Open";
+          if (official) {
+            result.score = 0;
+            result.reasons = [];
+            excluded++;
+          }
+          const record = { ...existing, ...candidate, ...result, status };
+          if (existingIndex >= 0) {
+            state.alerts[existingIndex] = record;
+            updated++;
+          } else {
+            state.alerts.unshift(record);
+            added++;
+          }
+        }
+        saveState();
+        render();
+        return { added, updated, excluded };
+      }
+      function matchesBrand(candidate) {
+        const target = normalize(state.brand.name);
+        const searchable = [candidate.name, candidate.handle].some((value) => {
+          const normalized = normalize(value);
+          return normalized.includes(target) || similarity(value, state.brand.name) >= .7;
+        });
+        const descriptionMatch = target && normalize(candidate.description).includes(target);
+        return searchable || descriptionMatch;
+      }
+      async function runLiveSearch(kind) {
+        const social = kind === "social";
+        const button = $(social ? "#live-social-search" : "#live-app-search");
+        const originalLabel = button.textContent;
+        button.disabled = true;
+        button.textContent = "Searching…";
+        setLiveStatus(kind, social ? "Searching Bluesky’s public profile directory…" : "Searching Apple’s public App Store catalog…");
+        try {
+          const brand = clean(state.brand.name);
+          if (!brand) throw new Error("Save a brand name in Brand profile before searching.");
+          let candidates;
+          if (apiConnected) {
+            const payload = await requestApi(
+              social ? "/api/search/bluesky" : "/api/search/app-store",
+              {
+                method: "POST",
+                body: JSON.stringify(social ? {} : { country: $("#app-country").value }),
+                signal: AbortSignal.timeout(20000)
+              }
+            );
+            if (!Array.isArray(payload.results)) throw new Error("The BrandShield backend returned an unexpected search response.");
+            candidates = payload.results;
+          } else if (social) {
+            const endpoint = new URL("https://public.api.bsky.app/xrpc/app.bsky.actor.searchActors");
+            endpoint.searchParams.set("q", brand);
+            endpoint.searchParams.set("limit", "30");
+            const payload = await fetchPublicJson(endpoint);
+            if (!Array.isArray(payload.actors)) throw new Error("Bluesky returned an unexpected search response.");
+            candidates = payload.actors.map((actor) => {
+              const handle = clean(actor.handle);
+              return {
+                id: `live-bsky-${clean(actor.did || handle)}`,
+                kind: "social",
+                platform: "Bluesky",
+                name: clean(actor.displayName) || handle,
+                handle: handle ? `@${handle}` : "",
+                description: clean(actor.description).slice(0, 600),
+                publisher: "",
+                age: "unknown",
+                source: "Bluesky public search",
+                url: handle ? `https://bsky.app/profile/${encodeURIComponent(handle)}` : ""
+              };
+            }).filter(matchesBrand);
+          } else {
+            const endpoint = new URL("https://itunes.apple.com/search");
+            endpoint.searchParams.set("term", brand);
+            endpoint.searchParams.set("entity", "software");
+            endpoint.searchParams.set("limit", "30");
+            endpoint.searchParams.set("country", $("#app-country").value);
+            const payload = await fetchPublicJson(endpoint);
+            if (!Array.isArray(payload.results)) throw new Error("Apple returned an unexpected search response.");
+            candidates = payload.results.map((app) => ({
+              id: `live-apple-${app.trackId}`,
+              kind: "app",
+              platform: "Apple App Store",
+              name: clean(app.trackName),
+              handle: clean(app.bundleId),
+              description: clean(app.description).slice(0, 600),
+              publisher: clean(app.artistName),
+              age: "unknown",
+              source: "Apple App Store public search",
+              url: app.trackViewUrl
+            })).filter((app) => app.name && matchesBrand(app));
+          }
+          const result = saveLiveResults(candidates);
+          const summary = `${social ? "Bluesky" : "Apple App Store"} search complete: ${candidates.length} matching public listing(s), ${result.added} new, ${result.updated} refreshed, ${result.excluded} registered official asset(s) excluded. Matches need human review.`;
+          setLiveStatus(kind, summary, "success");
+          notify(`${social ? "Bluesky" : "App Store"} search complete: ${candidates.length} public match(es).`);
+        } catch (error) {
+          console.error(`${social ? "Bluesky" : "Apple App Store"} live search failed.`, error);
+          const detail = error.name === "AbortError" ? "The request timed out. Try again." : error.message || "The public search request failed.";
+          const guidance = error instanceof TypeError ? " Check your internet connection; if this continues, the API may be unavailable to your browser." : "";
+          const message = `Live search failed: ${detail}${guidance}`;
+          setLiveStatus(kind, message, "error");
+          notify(message);
+        } finally {
+          button.disabled = false;
+          button.textContent = originalLabel;
+        }
+      }
+      function navigate(view) {
+        const target = $(`#view-${view}`);
+        if (!target) return;
+        $$(".page-view").forEach((page) => page.classList.toggle("active", page === target));
+        $$(".nav [data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
+        render();
+        window.scrollTo({top:0,behavior:"smooth"});
+      }
+      function openModal(kind = "social") {
+        $("#asset-kind").value = kind;
+        $("#asset-modal").classList.add("show");
+        $("#asset-name").focus();
+      }
+      function closeModal() {
+        $("#asset-modal").classList.remove("show");
+        $("#asset-form").reset();
+      }
+      function inspect(id) {
+        const item = state.alerts.find((alert) => alert.id === id);
+        if (!item) return;
+        selectedAlertId = id;
+        const details = [
+          `${item.name} · ${item.kind === "app" ? "Mobile app" : "Social profile"} on ${item.platform}.`,
+          `Risk score: ${item.score}/100 (${level(item.score)}). Status: ${item.status}.`,
+          `Source: ${item.source}.`,
+          ...(item.publisher ? [`Publisher: ${item.publisher}.`] : []),
+          ...(item.description ? [`Description: ${item.description}`] : []),
+          `Evidence: ${item.reasons.join("; ") || "Registered official asset."}`
+        ].join("\n");
+        window.alert(details);
+        if (item.status === "Open" && item.score > 0) {
+          item.status = "Investigating";
+          saveState(); render();
+        }
+      }
+
+      $$(".nav [data-view]").forEach((button) => button.addEventListener("click", () => navigate(button.dataset.view)));
+      document.addEventListener("click", (event) => {
+        const viewJump = event.target.closest("[data-view-jump]");
+        if (viewJump) { navigate(viewJump.dataset.viewJump); return; }
+        const addButton = event.target.closest("[data-add-kind]");
+        if (addButton) { openModal(addButton.dataset.addKind); return; }
+        const actionButton = event.target.closest("[data-action]");
+        if (actionButton) {
+          const item = state.alerts.find((alert) => alert.id === actionButton.dataset.id);
+          if (!item) return;
+          if (actionButton.dataset.action === "review") {
+            item.status = "Reviewed";
+            saveState(); render(); notify("Asset marked as reviewed.");
+          } else inspect(item.id);
+          return;
+        }
+        const removeButton = event.target.closest("[data-remove-official]");
+        if (removeButton) {
+          const removed = state.official.splice(Number(removeButton.dataset.removeOfficial), 1)[0];
+          if (removed) {
+            state.alerts = state.alerts.filter((item) => !(item.status.startsWith("Excluded") && item.kind === removed.kind && normalize(item.handle) === normalize(removed.identifier)));
+            saveState(); render(); notify("Official asset removed from the allowlist.");
+          }
+        }
+      });
+      $("#add-asset-top").addEventListener("click", () => openModal());
+      $("#modal-close").addEventListener("click", closeModal);
+      $("#modal-cancel").addEventListener("click", closeModal);
+      $("#asset-modal").addEventListener("click", (event) => { if (event.target === $("#asset-modal")) closeModal(); });
+      document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeModal(); });
+      $("#dashboard-search").addEventListener("input", render);
+      $("#dashboard-filter").addEventListener("change", render);
+      $$(".section-filter").forEach((select) => select.addEventListener("change", render));
+      $("#live-social-search").addEventListener("click", () => runLiveSearch("social"));
+      $("#live-app-search").addEventListener("click", () => runLiveSearch("app"));
+      $("#demo-scan").addEventListener("click", () => {
+        const samples = [
+          {kind:"social",platform:"Telegram",name:`${state.brand.name} Support Desk`,handle:`@${state.brand.name.toLocaleLowerCase()}_helpdesk`,description:`Official ${state.brand.name} support. Send your verification code to unlock your wallet.`,publisher:"",age:"new"},
+          {kind:"app",platform:"Google Play",name:`${state.brand.name} Cash Rewards`,handle:"",description:`Claim your ${state.brand.name} rewards now.`,publisher:"Unknown Publisher",age:"unknown"}
+        ];
+        let added = 0;
+        for (const sample of samples) {
+          const candidate = {...sample, id:newId()};
+          if (officialMatch(candidate) || state.alerts.some((item) => normalize(item.name) === normalize(candidate.name) && item.kind === candidate.kind)) continue;
+          const result = assess(candidate);
+          state.alerts.unshift({...candidate,...result,status:"Open",source:"Demo scan"});
+          added++;
+        }
+        saveState(); render();
+        notify(added ? `Demo scan complete: ${added} sample assets added for review.` : "Demo scan complete: matching sample assets are already in your queue.");
+      });
+      $("#asset-kind").addEventListener("change", () => {
+        const app = $("#asset-kind").value === "app";
+        $("#asset-platform").placeholder = app ? "e.g. Google Play" : "e.g. Instagram or X";
+        $("#asset-publisher").disabled = !app;
+      });
+      $("#asset-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const candidate = {
+          id:newId(), kind:clean(data.get("kind")), platform:clean(data.get("platform")),
+          name:clean(data.get("name")), handle:clean(data.get("handle")),
+          description:clean(data.get("description")), publisher:clean(data.get("publisher")),
+          age:clean(data.get("age")), source:"User submission"
+        };
+        if (officialMatch(candidate)) {
+          const registered = state.official.find((item) => item.kind === candidate.kind && (normalize(item.identifier) === normalize(candidate.handle) || normalize(item.identifier) === normalize(candidate.name)));
+          candidate.score = 0; candidate.reasons = [];
+          candidate.status = "Excluded — official";
+          candidate.source = `Registered ${registered?.platform || "official"} asset`;
+          state.alerts.unshift(candidate);
+          saveState(); closeModal(); render();
+          notify("Registered official asset matched and excluded from the threat queue.");
+          return;
+        }
+        let result;
+        if (apiConnected) {
+          try {
+            const analyzed = await requestApi("/api/analyze", { method: "POST", body: JSON.stringify(candidate) });
+            result = { score: analyzed.score, reasons: analyzed.reasons };
+            candidate.status = analyzed.status;
+          } catch (error) {
+            console.error("Backend analysis failed.", error);
+            notify(`Analysis failed: ${error.message}`);
+            return;
+          }
+        } else {
+          result = assess(candidate);
+        }
+        candidate.score = result.score;
+        candidate.reasons = result.reasons;
+        candidate.status = candidate.status || "Open";
+        state.alerts.unshift(candidate);
+        selectedAlertId = candidate.id;
+        saveState(); closeModal(); render();
+        navigate(candidate.kind === "app" ? "apps" : "social");
+        notify(`Analysis complete: ${level(candidate.score)} review priority (${candidate.score}/100).`);
+      });
+      $("#brand-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const name = clean(data.get("name"));
+        const website = clean(data.get("website"));
+        if (!name) { notify("Enter a brand name before saving."); return; }
+        state.brand.name = name;
+        state.brand.website = website;
+        saveState(); render(); notify("Brand profile saved. New analyses will use this reference.");
+      });
+      $("#brand-logo-input").addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) { notify("Choose a valid image file."); event.target.value = ""; return; }
+        if (file.size > 1024 * 1024) { notify("Logo must be 1 MB or smaller."); event.target.value = ""; return; }
+        const reader = new FileReader();
+        reader.onerror = () => notify("Could not read that image. Try a different file.");
+        reader.onload = () => {
+          state.brand.logo = String(reader.result);
+          saveState(); render(); notify("Brand logo updated.");
+        };
+        reader.readAsDataURL(file);
+      });
+      $("#clear-logo").addEventListener("click", () => {
+        state.brand.logo = "";
+        $("#brand-logo-input").value = "";
+        saveState(); render(); notify("Brand logo removed.");
+      });
+      $("#official-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const kind = $("#official-type").value;
+        const platform = clean($("#official-platform").value);
+        const identifier = clean($("#official-identifier").value);
+        const publisher = clean($("#official-publisher").value);
+        if (state.official.some((item) => item.kind === kind && normalize(item.identifier) === normalize(identifier) && normalize(item.platform) === normalize(platform))) {
+          notify("That official asset is already registered."); return;
+        }
+        state.official.push({kind,platform,identifier,publisher});
+        state.alerts = state.alerts.map((item) => officialMatch(item) && !item.status.startsWith("Excluded") ? {...item,score:0,reasons:[],status:"Excluded — official",source:`Registered ${platform} asset`} : item);
+        event.currentTarget.reset();
+        saveState(); render(); notify("Official asset registered and matching alerts excluded.");
+      });
+      render();
+      void initializeBackend();
+    })();
+  </script>
+</body>
+</html>

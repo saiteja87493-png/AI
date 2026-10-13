@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8fbf8">
+  <meta name="description" content="Meet BrandShield AI: an explainable digital risk protection demo for spotting suspicious social profiles and look-alike apps.">
+  <title>BrandShield AI — Protect what you've built</title>
+  <style>
+    :root {
+      --ink: #172b25;
+      --muted: #697971;
+      --green: #15784d;
+      --green-dark: #105e3d;
+      --mint: #e8f5eb;
+      --lime: #b8ed79;
+      --paper: #f8fbf8;
+      --line: #e4ebe4;
+      --white: #fff;
+      --shadow: 0 22px 70px rgba(23, 55, 37, .13);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 85px; }
+    body { min-width: 320px; margin: 0; }
+    a { color: inherit; }
+    button { font: inherit; }
+    :focus-visible { outline: 3px solid #43a876; outline-offset: 4px; }
+    .wrap { width: min(1160px, calc(100% - 48px)); margin-inline: auto; }
+    .skip { position: absolute; top: 8px; left: 8px; z-index: 10; transform: translateY(-160%); padding: 10px 14px; border-radius: 8px; background: var(--white); color: var(--ink); }
+    .skip:focus { transform: translateY(0); }
+    .topbar { position: sticky; top: 0; z-index: 5; border-bottom: 1px solid rgba(224,234,226,.88); background: rgba(248,251,248,.92); backdrop-filter: blur(15px); }
+    .nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 26px; }
+    .wordmark { display: inline-flex; flex: none; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-mark { width: 37px; height: 40px; display: grid; place-items: center; clip-path: polygon(50% 0, 94% 16%, 90% 65%, 50% 100%, 10% 65%, 6% 16%); background: linear-gradient(145deg, #2ca86c, #125b3e); color: white; font-size: 19px; font-weight: 850; }
+    .wordmark-text { font-size: 16px; font-weight: 790; letter-spacing: -.55px; }
+    .wordmark-text span { color: var(--green); }
+    .nav-links { display: flex; align-items: center; justify-content: center; gap: 31px; margin: 0; padding: 0; list-style: none; }
+    .nav-links a { color: #58675e; font-size: 13px; font-weight: 570; text-decoration: none; transition: color .16s; }
+    .nav-links a:hover { color: var(--green); }
+    .button { min-height: 43px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 17px; border: 1px solid transparent; border-radius: 9px; background: var(--green); color: white; font-size: 12px; font-weight: 730; text-decoration: none; box-shadow: 0 5px 13px rgba(21,120,77,.13); transition: transform .16s, background .16s, box-shadow .16s; }
+    .button:hover { transform: translateY(-1px); background: var(--green-dark); box-shadow: 0 8px 18px rgba(21,120,77,.2); }
+    .button.secondary { border-color: var(--line); background: white; color: #294136; box-shadow: none; }
+    .button.secondary:hover { border-color: #b8d9c1; background: #f6fbf6; }
+    .button svg { width: 15px; height: 15px; }
+    .menu-toggle { display: none; width: 41px; height: 41px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 9px; background: white; color: var(--ink); cursor: pointer; }
+
+    .hero { position: relative; overflow: hidden; padding: 79px 0 68px; background: linear-gradient(180deg,#f5faf5 0%,#fbfcf9 100%); }
+    .hero::before { position: absolute; top: -275px; right: -115px; width: 700px; height: 700px; border: 1px solid rgba(30,130,77,.07); border-radius: 50%; content: ""; }
+    .hero::after { position: absolute; top: -186px; right: -21px; width: 510px; height: 510px; border: 1px solid rgba(30,130,77,.065); border-radius: 50%; content: ""; pointer-events: none; }
+    .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 53px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 10px; font-weight: 780; letter-spacing: 1.25px; text-transform: uppercase; }
+    .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: #43b77a; box-shadow: 0 0 0 4px #43b77a1c; }
+    h1 { max-width: 585px; margin: 19px 0 18px; font-size: clamp(42px, 5.3vw, 66px); line-height: 1.025; font-weight: 780; letter-spacing: -3.7px; }
+    h1 .accent { color: var(--green); }
+    .hero-copy { max-width: 485px; margin: 0; color: #66746a; font-size: 15px; line-height: 1.8; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 27px; }
+    .hero-note { display: flex; align-items: center; gap: 8px; margin-top: 22px; color: #748178; font-size: 10px; }
+    .hero-note svg { width: 15px; height: 15px; flex: none; color: var(--green); }
+    .hero-art { position: relative; min-width: 0; padding: 12px 0 16px 11px; }
+    .orbit { position: absolute; top: 50%; left: 51%; width: 410px; height: 410px; transform: translate(-50%,-50%); border: 1px dashed #bedcc4; border-radius: 50%; opacity: .65; }
+    .orbit::before, .orbit::after { position: absolute; width: 9px; height: 9px; border: 3px solid #fafcf9; border-radius: 50%; background: #39a66b; content: ""; box-shadow: 0 0 0 1px #b5d9bf; }
+    .orbit::before { top: 69px; right: 38px; }
+    .orbit::after { bottom: 64px; left: 43px; background: #a285ee; box-shadow: 0 0 0 1px #cbbdf0; }
+    .dashboard-preview { position: relative; z-index: 1; width: min(100%, 480px); margin-left: auto; padding: 15px; border: 1px solid #e2e9e2; border-radius: 17px; background: white; box-shadow: var(--shadow); transform: rotate(1deg); }
+    .preview-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 1px 2px 13px; border-bottom: 1px solid #edf0ed; }
+    .preview-brand { display: flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 780; }
+    .preview-shield { width: 20px; height: 22px; display: grid; place-items: center; clip-path: polygon(50% 0,95% 15%,90% 65%,50% 100%,10% 65%,5% 15%); background: #188755; color: white; font-size: 10px; }
+    .preview-state { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 20px; background: #eef8ef; color: #28774c; font-size: 8px; font-weight: 720; }
+    .preview-state::before { width: 5px; height: 5px; border-radius: 50%; background: #39b56f; content: ""; }
+    .preview-title { margin: 14px 1px 10px; font-size: 12px; font-weight: 760; }
+    .preview-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .preview-stat { padding: 10px 9px; border: 1px solid #edf0ed; border-radius: 9px; background: #fcfdfb; }
+    .preview-stat span { display: block; color: #76837a; font-size: 8px; }
+    .preview-stat strong { display: block; margin-top: 6px; font-size: 18px; letter-spacing: -.6px; }
+    .preview-stat .danger { color: #d3555e; }
+    .preview-section { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 15px 1px 8px; }
+    .preview-section strong { font-size: 10px; }
+    .preview-section span { color: #8a958d; font-size: 8px; }
+    .preview-alert { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 9px; padding: 10px 8px; border-top: 1px solid #eff1ef; }
+    .preview-account { display: flex; min-width: 0; align-items: center; gap: 8px; }
+    .account-avatar { width: 26px; height: 26px; display: grid; flex: none; place-items: center; border-radius: 8px; background: #fbe9e8; color: #cc515a; font-size: 10px; font-weight: 800; }
+    .account-avatar.app { background: #eeeaff; color: #7960c8; }
+    .account-name { overflow: hidden; font-size: 9px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
+    .account-reason { overflow: hidden; margin-top: 3px; color: #879189; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+    .risk-pill { padding: 5px 7px; border-radius: 20px; background: #fff0e5; color: #bd6828; font-size: 8px; font-weight: 750; white-space: nowrap; }
+    .risk-pill.red { background: #fdebed; color: #bd4650; }
+    .preview-link { color: var(--green); font-size: 8px; font-weight: 730; text-decoration: none; white-space: nowrap; }
+    .floating-note { position: absolute; z-index: 2; right: -13px; bottom: 0; display: flex; align-items: center; gap: 9px; padding: 11px 14px; border: 1px solid #e2eae3; border-radius: 12px; background: white; box-shadow: 0 8px 28px #12331b12; }
+    .floating-icon { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 9px; background: #eaf6eb; color: #22804e; font-size: 13px; font-weight: 800; }
+    .floating-note strong { display: block; font-size: 9px; }
+    .floating-note span { display: block; margin-top: 3px; color: #7b887f; font-size: 8px; }
+
+    .trust-strip { padding: 23px 0; border-block: 1px solid #e8eee8; background: white; }
+    .trust-grid { display: grid; grid-template-columns: repeat(4,1fr); }
+    .trust-item { display: flex; align-items: center; justify-content: center; gap: 11px; padding: 4px 15px; }
+    .trust-item + .trust-item { border-left: 1px solid #e8eee8; }
+    .trust-icon { width: 33px; height: 33px; display: grid; flex: none; place-items: center; border-radius: 10px; background: #edf7ef; color: #218150; font-size: 14px; font-weight: 800; }
+    .trust-item strong { display: block; font-size: 12px; }
+    .trust-item span { display: block; margin-top: 3px; color: #78857c; font-size: 9px; }
+
+    section.content { padding: 80px 0; }
+    .section-intro { max-width: 590px; margin: 0 auto 32px; text-align: center; }
+    .section-intro h2 { margin: 12px 0 10px; font-size: clamp(27px,3vw,37px); line-height: 1.15; letter-spacing: -1.35px; }
+    .section-intro p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .section-intro .eyebrow { justify-content: center; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; }
+    .feature-card { min-height: 194px; padding: 21px; border: 1px solid #e7ede7; border-radius: 14px; background: white; transition: transform .2s,box-shadow .2s,border-color .2s; }
+    .feature-card:hover { transform: translateY(-3px); border-color: #d1e5d4; box-shadow: 0 12px 32px #17371d0d; }
+    .feature-icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 12px; background: #eaf6ec; color: #197a4b; font-size: 17px; }
+    .feature-icon.purple { background: #f0edfc; color: #755bc2; }
+    .feature-icon.orange { background: #fff2e5; color: #bd702e; }
+    .feature-icon.blue { background: #eaf3fb; color: #3975b2; }
+    .feature-icon.rose { background: #fcecef; color: #b95163; }
+    .feature-icon.teal { background: #e6f5f2; color: #288675; }
+    .feature-card h3 { margin: 15px 0 7px; font-size: 14px; letter-spacing: -.2px; }
+    .feature-card p { margin: 0; color: #748178; font-size: 11px; line-height: 1.65; }
+    .how { padding: 65px 0 74px !important; background: #f0f7f0; }
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 23px; max-width: 970px; margin: 36px auto 0; }
+    .step { position: relative; padding: 0 20px; text-align: center; }
+    .step:not(:last-child)::after { position: absolute; top: 22px; left: calc(50% + 48px); width: calc(100% - 73px); border-top: 1px dashed #b7d2bd; content: ""; }
+    .step-number { position: relative; z-index: 1; width: 45px; height: 45px; display: grid; place-items: center; margin: 0 auto 14px; border: 1px solid #c9e2cf; border-radius: 50%; background: white; color: var(--green); font-size: 13px; font-weight: 780; }
+    .step h3 { margin: 0 0 7px; font-size: 13px; }
+    .step p { max-width: 240px; margin: 0 auto; color: #738077; font-size: 10px; line-height: 1.6; }
+    .review-callout { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 28px; margin-top: 63px; padding: 33px 38px; border-radius: 17px; background: linear-gradient(115deg,#145b3c,#16834f); color: white; }
+    .review-callout h2 { margin: 0 0 8px; font-size: clamp(22px,3vw,30px); letter-spacing: -1px; }
+    .review-callout p { max-width: 565px; margin: 0; color: #d4ebdb; font-size: 11px; line-height: 1.7; }
+    .review-callout .button { border-color: white; background: white; color: #155d3c; white-space: nowrap; }
+    .review-callout .button:hover { background: #edf8ef; }
+    .footer { padding: 23px 0; border-top: 1px solid #e3ebe3; background: white; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .footer-brand { display: flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 770; }
+    .footer-brand .logo-mark { width: 25px; height: 28px; font-size: 13px; }
+    .footer-note { color: #7d8980; font-size: 9px; text-align: right; }
+
+    @media (max-width: 850px) {
+      .nav-links { gap: 18px; }
+      .hero { padding: 59px 0 53px; }
+      .hero-grid { gap: 27px; }
+      h1 { font-size: clamp(39px,6.4vw,55px); letter-spacing: -2.8px; }
+      .orbit { width: 320px; height: 320px; }
+      .trust-item { gap: 8px; padding-inline: 9px; }
+      .trust-item strong { font-size: 10px; }
+      .trust-item span { font-size: 8px; }
+      .review-callout { padding: 28px; }
+    }
+    @media (max-width: 650px) {
+      .wrap { width: min(100% - 34px, 500px); }
+      .nav { min-height: 65px; gap: 12px; }
+      .menu-toggle { display: inline-flex; }
+      .nav>.button { min-height: 38px; margin-left: auto; padding-inline: 12px; font-size: 10px; }
+      .nav-links { position: absolute; top: 64px; right: 0; left: 0; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: 8px 17px 13px; border-bottom: 1px solid var(--line); background: #fbfdfb; box-shadow: 0 12px 18px #12331b0d; }
+      .nav-links.open { display: flex; }
+      .nav-links a { display: block; padding: 12px 3px; }
+      .hero { padding: 48px 0 38px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+      h1 { max-width: 470px; margin-top: 14px; font-size: clamp(43px,11vw,60px); letter-spacing: -2.8px; }
+      .hero-copy { max-width: 465px; font-size: 13px; }
+      .hero-actions { margin-top: 20px; }
+      .hero-art { width: min(100%,480px); margin: 0 auto; padding: 4px 4px 12px; }
+      .dashboard-preview { padding: 12px; transform: none; }
+      .orbit { width: 290px; height: 290px; }
+      .floating-note { right: -4px; }
+      .trust-strip { padding: 17px 0; }
+      .trust-grid { grid-template-columns: repeat(2,1fr); row-gap: 14px; }
+      .trust-item { justify-content: flex-start; padding-inline: 6px; }
+      .trust-item:nth-child(3) { border-left: 0; }
+      section.content { padding: 61px 0; }
+      .section-intro { margin-bottom: 23px; }
+      .feature-grid { grid-template-columns: 1fr 1fr; gap: 9px; }
+      .feature-card { min-height: 180px; padding: 15px; }
+      .feature-card h3 { font-size: 12px; }
+      .feature-card p { font-size: 10px; }
+      .feature-icon { width: 34px; height: 34px; }
+      .steps { grid-template-columns: 1fr; gap: 19px; margin-top: 27px; }
+      .step:not(:last-child)::after { top: 47px; left: 50%; width: 0; height: 26px; border-top: 0; border-left: 1px dashed #b7d2bd; }
+      .step { padding: 0 10px; }
+      .review-callout { grid-template-columns: 1fr; gap: 18px; margin-top: 43px; padding: 25px 21px; }
+      .review-callout .button { justify-self: start; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+      .footer-note { text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <nav class="nav wrap" aria-label="Main navigation">
+      <a class="wordmark" href="#home" aria-label="BrandShield AI home">
+        <span class="logo-mark" aria-hidden="true">✓</span>
+        <span class="wordmark-text">BrandShield <span>AI</span></span>
+      </a>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#about">About the demo</a></li>
+      </ul>
+      <a class="button" href="./dashboard.html">Open dashboard <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="home">
+      <div class="wrap hero-grid">
+        <div class="hero-copy-block">
+          <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Digital risk protection · HacXLerate 2026</div>
+          <h1>Protect what<br>you've built.<br><span class="accent">Spot the fakes.</span></h1>
+          <p class="hero-copy">A clearer way to review look-alike social profiles and suspicious mobile apps. BrandShield helps your team spot warning signs, understand risk, and decide what to investigate next.</p>
+          <div class="hero-actions">
+            <a class="button" href="./dashboard.html">Explore the dashboard <span aria-hidden="true">→</span></a>
+            <a class="button secondary" href="#how-it-works">See how it works</a>
+          </div>
+          <div class="hero-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg>
+            Demo prototype · public live searches for Bluesky and Apple App Store; risk scores are leads for human review
+          </div>
+        </div>
+
+        <div class="hero-art" aria-label="Preview of the BrandShield risk dashboard">
+          <div class="orbit" aria-hidden="true"></div>
+          <div class="dashboard-preview">
+            <div class="preview-bar">
+              <div class="preview-brand"><span class="preview-shield" aria-hidden="true">✓</span>BrandShield <span style="color:#208151">AI</span></div>
+              <div class="preview-state">DEMO WORKSPACE</div>
+            </div>
+            <div class="preview-title">Threat intelligence overview</div>
+            <div class="preview-stats">
+              <div class="preview-stat"><span>Assets analyzed</span><strong>128</strong></div>
+              <div class="preview-stat"><span>Needs review</span><strong class="danger">24</strong></div>
+              <div class="preview-stat"><span>Brand profile</span><strong style="color:#188253">✓</strong></div>
+            </div>
+            <div class="preview-section"><strong>Priority investigations</strong><span>EXPLAINABLE SIGNALS</span></div>
+            <div class="preview-alert">
+              <div class="preview-account"><span class="account-avatar" aria-hidden="true">◎</span><div style="min-width:0"><div class="account-name">@NovaPay_Support</div><div class="account-reason">Look-alike · requests account details</div></div></div>
+              <span class="risk-pill red">92 Critical</span>
+              <a class="preview-link" href="./dashboard.html">Review →</a>
+            </div>
+            <div class="preview-alert">
+              <div class="preview-account"><span class="account-avatar app" aria-hidden="true">▣</span><div style="min-width:0"><div class="account-name">Nova Pay Rewards</div><div class="account-reason">Similar name · unrecognized publisher</div></div></div>
+              <span class="risk-pill">76 High</span>
+              <a class="preview-link" href="./dashboard.html">Review →</a>
+            </div>
+          </div>
+          <div class="floating-note"><span class="floating-icon" aria-hidden="true">✓</span><span><strong>Official assets protected</strong><span>Registered accounts are excluded</span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-strip" aria-label="Prototype capabilities">
+      <div class="wrap trust-grid">
+        <div class="trust-item"><span class="trust-icon" aria-hidden="true">◎</span><div><strong>Social profiles</strong><span>Look-alike account signals</span></div></div>
+        <div class="trust-item"><span class="trust-icon" aria-hidden="true">▣</span><div><strong>Mobile apps</strong><span>Names and publishers</span></div></div>
+        <div class="trust-item"><span class="trust-icon" aria-hidden="true">0–100</span><div><strong>Risk scoring</strong><span>Evidence you can inspect</span></div></div>
+        <div class="trust-item"><span class="trust-icon" aria-hidden="true">✓</span><div><strong>Brand-aware</strong><span>Official assets allowlisted</span></div></div>
+      </div>
+    </section>
+
+    <section class="content" id="features">
+      <div class="wrap">
+        <div class="section-intro">
+          <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>One clear view of digital risk</div>
+          <h2>Know what looks suspicious — and why.</h2>
+          <p>Bring useful signals together in one simple workspace. Review potential threats with context instead of treating a name match as proof.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card"><div class="feature-icon">◎</div><h3>Look-alike social profiles</h3><p>Compare names, handles, and descriptions to surface profiles that may be impersonating your brand.</p></article>
+          <article class="feature-card"><div class="feature-icon purple">▣</div><h3>Suspicious mobile apps</h3><p>Review similar app names and unrecognized publishers before they confuse your customers.</p></article>
+          <article class="feature-card"><div class="feature-icon orange">◉</div><h3>Explainable risk signals</h3><p>See a score and the contributing signals—such as look-alike text, urgency, or sensitive-data requests.</p></article>
+          <article class="feature-card"><div class="feature-icon blue">◇</div><h3>Your brand, as the reference</h3><p>Set your company name, website, and logo to ground analyses in the brand you want to protect.</p></article>
+          <article class="feature-card"><div class="feature-icon rose">✓</div><h3>Official asset protection</h3><p>Register legitimate accounts and apps so matching assets can be excluded from the review queue.</p></article>
+          <article class="feature-card"><div class="feature-icon teal">⚑</div><h3>Investigation workflow</h3><p>Filter alerts by risk and update review status as your team works through its queue.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content how" id="how-it-works">
+      <div class="wrap">
+        <div class="section-intro">
+          <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Simple by design</div>
+          <h2>From brand profile to human review.</h2>
+          <p>A transparent prototype workflow that keeps analysts in control of the decision.</p>
+        </div>
+        <div class="steps">
+          <article class="step"><div class="step-number">01</div><h3>Set up your brand</h3><p>Add the official identity, then register genuine social profiles and apps.</p></article>
+          <article class="step"><div class="step-number">02</div><h3>Analyze an asset</h3><p>Search public Bluesky profiles or Apple App Store listings, use the sample scan, or submit details manually for risk scoring.</p></article>
+          <article class="step"><div class="step-number">03</div><h3>Investigate with context</h3><p>Review the score and evidence. Decide what to investigate—similarity alone isn't proof.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content" id="about" style="padding-top:66px">
+      <div class="wrap">
+        <div class="review-callout">
+          <div><h2>Ready to see BrandShield in action?</h2><p>Open the dashboard to search public Bluesky and Apple App Store listings, review sample alerts, register official assets, or submit a profile or app manually.</p></div>
+          <a class="button" href="./dashboard.html">Launch dashboard <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div class="footer-brand"><span class="logo-mark" aria-hidden="true">✓</span>BrandShield AI <span style="color:#87948a;font-weight:500">· Team REBELS</span></div>
+      <div class="footer-note">Hackathon prototype · Demo data only · No live social or app-store monitoring</div>
+    </div>
+  </footer>
+  <script>
+    (() => {
+      const button = document.querySelector("#menu-toggle");
+      const links = document.querySelector("#nav-links");
+      button.addEventListener("click", () => {
+        const expanded = button.getAttribute("aria-expanded") === "true";
+        button.setAttribute("aria-expanded", String(!expanded));
+        links.classList.toggle("open", !expanded);
+      });
+      links.addEventListener("click", (event) => {
+        if (event.target.closest("a")) {
+          links.classList.remove("open");
+          button.setAttribute("aria-expanded", "false");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
